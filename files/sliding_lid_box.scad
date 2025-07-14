@@ -31,9 +31,9 @@ X_Dividers = 0;
 Even_X_Dividers = true; // [true,false] and don't use "" for true or false
 X_Divider_Distances = [10,20,30]; // Set Values here if you set Even_X_Dividers to false. The amount of values needs to be at least the amount of X_Dividers for it to work properly.
 // Number of internal dividers
-Y_Dividers = 0;
-Even_Y_Dividers = true; // [true,false]
-Y_Divider_Distances = [10, 15, 20, 35]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly.
+Y_Dividers = 4;
+Even_Y_Dividers = false; // [true,false], even only appear in primary box.
+Y_Divider_Distances = [15, 30, 60, 160]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly. If the value here is more than Box_x/2 it will apply the height of the E_box1.
 // Extra Attached box1
 E_box1 = true; // [true,false]
 E_box1_Y = 100;
@@ -118,7 +118,7 @@ module box() {
 		cube(size=[x+Delta, y+Delta,Floor_thickness],center=true);
     if (E_box1==true)
     {
-        #translate([0, E_box1_Yoffset,Floor_thickness/2])
+        translate([0, E_box1_Yoffset,Floor_thickness/2])
         cube(size=[x+Delta, E_box1_Y+Delta*2, Floor_thickness], center=true);
     }
     
@@ -127,7 +127,7 @@ module box() {
 		lid_ridge(x,y);
     if (E_box1==true)
     {
-        #translate([0, E_box1_Yoffset, E_box1_Z-Lid_thickness/2])
+        translate([0, E_box1_Yoffset, E_box1_Z-Lid_thickness/2])
             E_box_lid_ridge(x, E_box1_Y);
     }
 }
@@ -146,8 +146,11 @@ if (X_Dividers > 0) {
 if (Y_Dividers > 0) {
 	div_step = Box_y / (Y_Dividers+1);
 	for (i=[1:Y_Dividers]) {
-		#translate([-Wall_thickness/4, Box_y/2-(Even_Y_Dividers ? div_step*i :Y_Divider_Distances[i-1]), Box_z/2-Lid_thickness/2])
-			cube(size=[Box_x, Floor_thickness, Box_z-Lid_thickness], center=true);
+        is_extra = (Y_Divider_Distances[i-1] > Box_x/2);
+        z_height = is_extra ? E_box1_Z - Lid_thickness : Box_z - Lid_thickness;
+        z_center = is_extra ? (E_box1_Z/2 - Lid_thickness/2) : Box_z/2 - Lid_thickness/2;
+		#translate([-Wall_thickness/4, Box_y/2-(Even_Y_Dividers ? div_step*i :Y_Divider_Distances[i-1]), z_center])
+			cube(size=[Box_x, Floor_thickness, z_height], center=true);
 	}
 }
 // Build the Lid
