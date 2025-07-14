@@ -17,6 +17,10 @@ Lid_thickness = 10;   //[2:0.5:10]
 Lid_inset = "yes"; // [yes,no]
 // Fingernail recess to ease opening lid
 Grip_recess = "yes"; // [yes,no]
+// Add inset for a Label on extra box lid
+E_Lid_inset = "yes"; // [yes,no]
+// Fingernail recess to ease opening extra box lid
+E_Grip_recess = "yes"; // [yes,no]
 
 // Amount of play in the lid to fit well.
 Looseness = 0.8;  //[0:0.1:1]
@@ -71,9 +75,21 @@ module fingernail_helper() {
 
 // Extra box lid
 module E_box_lid(extra_x=Looseness, extra_z=Delta*2) {
-    translate([0, Wall_thickness/2+Delta, -Lid_thickness/2-epsilon/2])
-    linear_extrude(height=Lid_thickness+extra_z*2, scale=[lid_scale,1])
-        square(size=[Box_x+extra_x, E_box1_Y+Wall_thickness], center=true);
+    difference() {
+        translate([0, Wall_thickness/2+Delta, -Lid_thickness/2-epsilon/2])
+        linear_extrude(height=Lid_thickness+extra_z*2, scale=[lid_scale,1])
+            square(size=[Box_x+extra_x, E_box1_Y+Wall_thickness], center=true);
+        // subtract fingernail recess
+        if (E_Grip_recess=="yes") {
+            translate([0,-E_box1_Y/2.7,Lid_thickness/4])
+                fingernail_helper();
+        }
+        // subtract inset
+        if (E_Lid_inset=="yes") {
+            translate([0,0,Lid_thickness/2])
+                cube(size=[Box_x/2, E_box1_Y/2,Lid_thickness/2], center=true);
+        }
+    }
 }
 
 // Extra box lid ridge
