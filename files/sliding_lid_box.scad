@@ -69,6 +69,23 @@ module fingernail_helper() {
 	#cube(size=[Box_x/3, fingernail_width,Lid_thickness], center=true);
 }
 
+// Extra box lid
+module E_box_lid(extra_x=Looseness, extra_z=Delta*2) {
+    translate([0, Wall_thickness/2+Delta, -Lid_thickness/2-epsilon/2])
+    linear_extrude(height=Lid_thickness+extra_z*2, scale=[lid_scale,1])
+        square(size=[Box_x+extra_x, E_box1_Y], center=true);
+}
+
+// Extra box lid ridge
+module E_box_lid_ridge() {
+    difference() {
+        minkowski() {
+            cube(size=[Box_x, E_box1_Y, Lid_thickness], center=true);
+            cylinder(h=epsilon, r=Wall_thickness, $fn=roundness);
+        }
+        E_box_lid(0, epsilon);
+    }
+}
 
 // box
 module box() {
@@ -102,11 +119,29 @@ module box() {
 	// Top ridge of lid
 	#translate([0,0,Box_z-Lid_thickness/2])
 		lid_ridge(x,y);
-    if (E_box1==true)
+    if (E_box1==false) //temporary set to false until fix
     {
         #translate([0,E_box1_Yoffset,E_box1_Z-Lid_thickness/2])
 		lid_ridge(x,E_box1_Y);
     
+    }
+    if (E_box1==true)
+    {
+        #translate([0, E_box1_Yoffset, E_box1_Z-Lid_thickness/2])
+            E_box_lid_ridge();
+        // Place the extra box lid to the side for printing, like the main lid
+        E_lid_tx = (Show_assembled == "no") ? Box_x + Wall_thickness : 0;
+        E_lid_tz = (Show_assembled == "yes") ? E_box1_Z - Lid_thickness/2 : Lid_thickness/2;
+        E_lid_ty = (Show_assembled == "yes") ? E_box1_Y/3 : 0;
+        translate([E_lid_tx, E_box1_Yoffset + E_lid_ty, E_lid_tz])
+            E_box_lid(-Looseness, 0);
+        // Subtract a cube from the front to open the slot for the lid
+        difference() {
+            // The extra box body (already created above)
+            // Subtract a cube at the front (positive Y direction)
+            translate([0, E_box1_Yoffset + (E_box1_Y/2) - 0.01, (E_box1_Z - Lid_thickness)/2])
+                cube([Box_x - Wall_thickness + 2*Wall_thickness, 2, E_box1_Z - Lid_thickness], center=true);
+        }
     }
 }
 
