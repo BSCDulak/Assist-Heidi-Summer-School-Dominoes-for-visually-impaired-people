@@ -5,14 +5,17 @@
 // preview[view:north west, tilt:top diagonal]
 
 // Width of Box
-Box_x = 172;
+Box_x = 180;
 // Length of Box
-Box_y = 100;
+Box_y = 284;
 // Height of Box
-Box_z = 50; 
-Wall_thickness = 10;  //[2:0.5:10]
+Box_z = 215; 
+Wall_thickness = 5;  //[2:0.5:10]
 Floor_thickness = 5;
-Lid_thickness = 10;   //[2:0.5:10]
+Lid_thickness = 5;   //[2:0.5:10]
+// Cut in half if the thing is too big for the printer
+CutInHalfX = 0.3; // Input a value for the distance of the pieces cut on the X-Axis
+CutInHalfY = 0; // Input a value for the distance of the pieces cut on the Y-Axis
 // Add inset for a Label
 Lid_inset = "yes"; // [yes,no]
 // Fingernail recess to ease opening lid
@@ -31,11 +34,11 @@ X_Dividers = 0;
 Even_X_Dividers = true; // [true,false] and don't use "" for true or false
 X_Divider_Distances = [10,20,30]; // Set Values here if you set Even_X_Dividers to false. The amount of values needs to be at least the amount of X_Dividers for it to work properly.
 // Number of internal dividers
-Y_Dividers = 4;
+Y_Dividers = 2;
 Even_Y_Dividers = false; // [true,false], even only appear in primary box.
-Y_Divider_Distances = [15, 30, 60, 160]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly. If the value here is more than Box_x/2 it will apply the height of the E_box1.
+Y_Divider_Distances = [281-15, 281-(15+3+80)]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly. If the value here is more than Box_x/2 it will apply the height of the E_box1.
 // Extra Attached box1
-E_box1 = true; // [true,false]
+E_box1 = false; // [true,false]
 E_box1_Y = 100;
 E_box1_Z = 120;
 
@@ -146,11 +149,11 @@ if (X_Dividers > 0) {
 if (Y_Dividers > 0) {
 	div_step = Box_y / (Y_Dividers+1);
 	for (i=[1:Y_Dividers]) {
-        is_extra = (Y_Divider_Distances[i-1] > Box_x/2);
+        is_extra = (Y_Divider_Distances[i-1] > Box_x/2 && E_box1 == true);
         z_height = is_extra ? E_box1_Z - Lid_thickness : Box_z - Lid_thickness;
         z_center = is_extra ? (E_box1_Z/2 - Lid_thickness/2) : Box_z/2 - Lid_thickness/2;
 		#translate([-Wall_thickness/4, Box_y/2-(Even_Y_Dividers ? div_step*i :Y_Divider_Distances[i-1]), z_center])
-			cube(size=[Box_x, Floor_thickness, z_height], center=true);
+			cube(size=[Box_x, 0.3, z_height], center=true);
 	}
 }
 // Build the Lid
@@ -170,7 +173,7 @@ translate([tx,ty,tz])
 		// subtract inset
 		if (Lid_inset=="yes") {
 			translate([0,0,Lid_thickness/2])
-				cube(size=[Box_x/2, Box_y/2,Lid_thickness/2], center=true);
+				cube(size=[Box_x/1.5, Box_y/1.5,Lid_thickness/2], center=true);
 		}
 	}
 // Build the Extra Box Lid (after main lid)
