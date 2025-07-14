@@ -75,21 +75,9 @@ module fingernail_helper() {
 
 // Extra box lid
 module E_box_lid(extra_x=Looseness, extra_z=Delta*2) {
-    difference() {
-        translate([0, Wall_thickness/2+Delta, -Lid_thickness/2-epsilon/2])
-        linear_extrude(height=Lid_thickness+extra_z*2, scale=[lid_scale,1])
-            square(size=[Box_x+extra_x, E_box1_Y+Wall_thickness], center=true);
-        // subtract fingernail recess
-        if (E_Grip_recess=="yes") {
-            translate([0,-E_box1_Y/2.7,Lid_thickness/4])
-                fingernail_helper();
-        }
-        // subtract inset
-        if (E_Lid_inset=="yes") {
-            translate([0,0,Lid_thickness/2])
-                cube(size=[Box_x/2, E_box1_Y/2,Lid_thickness/2], center=true);
-        }
-    }
+    translate([0, Wall_thickness/2+Delta, -Lid_thickness/2-epsilon/2])
+    linear_extrude(height=Lid_thickness+extra_z*2, scale=[lid_scale,1])
+        square(size=[Box_x+extra_x, E_box1_Y+Wall_thickness], center=true);
 }
 
 // Extra box lid ridge
@@ -143,8 +131,21 @@ module box() {
         E_lid_tx = (Show_assembled == "no") ? Box_x + Wall_thickness : 0;
         E_lid_tz = (Show_assembled == "yes") ? E_box1_Z - Lid_thickness/2 : Lid_thickness/2;
         E_lid_ty = (Show_assembled == "yes") ? E_box1_Y/3 : -Wall_thickness;
+        color(lid_color)
         translate([E_lid_tx, E_box1_Yoffset + E_lid_ty, E_lid_tz])
+        difference() {
             E_box_lid(-Looseness, 0);
+            // subtract fingernail recess
+            if (E_Grip_recess=="yes") {
+                translate([0,-E_box1_Y/2.7,Lid_thickness/4])
+                    fingernail_helper();
+            }
+            // subtract inset
+            if (E_Lid_inset=="yes") {
+                translate([0,0,Lid_thickness/2])
+                    cube(size=[Box_x/2, E_box1_Y/2,Lid_thickness/2], center=true);
+            }
+        }
         // Subtract a cube from the front to open the slot for the lid
         difference() {
             // The extra box body (already created above)
