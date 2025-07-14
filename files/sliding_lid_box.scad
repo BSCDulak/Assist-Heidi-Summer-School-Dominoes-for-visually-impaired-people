@@ -24,6 +24,8 @@ Looseness = 0.8;  //[0:0.1:1]
 Show_assembled = "no"; // [yes,no]
 // Number of internal dividers
 X_Dividers = 3;
+Even_Dividers = true; // [true,false] and don't use "" for true or false
+X_Divider_Distances = [10,20,30]; // Set Values here if you set Even_Dividers to false. The amount of values needs to be at least the amount of X_Dividers for it to work properly.
 // Number of internal dividers
 Y_Dividers = 0;
 
@@ -87,7 +89,7 @@ box();
 if (X_Dividers > 0) {
 	div_step = Box_x / (X_Dividers+1);
 	for (i=[1:X_Dividers]) {
-		translate([Box_x/2-div_step*i, -Wall_thickness/4, Box_z/2-Lid_thickness/2])
+		translate([Box_x/2-(Even_Dividers ? div_step* i : X_Divider_Distances[i-1]), -Wall_thickness/4, Box_z/2-Lid_thickness/2])
 			cube(size=[Floor_thickness, Box_y, Box_z-Lid_thickness], center=true);
 	}
 }
