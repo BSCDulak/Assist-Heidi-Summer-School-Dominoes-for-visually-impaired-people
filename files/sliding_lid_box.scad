@@ -117,8 +117,11 @@ module box() {
         }
     }
 	// floor
+    difference(){
 	translate([0,0,Floor_thickness/2])
 		cube(size=[x+Delta, y+Delta,Floor_thickness],center=true);
+        cube([999, CutInHalfX,999]);
+        }
     if (E_box1==true)
     {
         translate([0, E_box1_Yoffset,Floor_thickness/2])
