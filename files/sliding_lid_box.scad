@@ -10,9 +10,9 @@ Box_x = 180;
 Box_y = 284;
 // Height of Box
 Box_z = 215; 
-Wall_thickness = 5;  //[2:0.5:10]
-Floor_thickness = 5;
-Lid_thickness = 5;   //[2:0.5:10]
+Wall_thickness = 3;  //[2:0.5:10]
+Floor_thickness = 3;
+Lid_thickness = 3;   //[2:0.5:10]
 // Cut in half if the thing is too big for the printer
 CutInHalfX = 0.3; // Input a value for the distance of the pieces cut on the X-Axis
 CutInHalfY = 0; // Input a value for the distance of the pieces cut on the Y-Axis
@@ -175,6 +175,7 @@ translate([tx,ty,tz])
 			translate([0,0,Lid_thickness/2])
 				cube(size=[Box_x/1.5, Box_y/1.5,Lid_thickness/2], center=true);
 		}
+        translate([0,-40,0])cube([999, CutInHalfX, 999], center = true);
 	}
 // Build the Extra Box Lid (after main lid)
 if (E_box1==true) {
