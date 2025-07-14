@@ -30,6 +30,10 @@ X_Divider_Distances = [10,20,30]; // Set Values here if you set Even_X_Dividers 
 Y_Dividers = 4;
 Even_Y_Dividers = false; // [true,false]
 Y_Divider_Distances = [10, 15, 20, 35]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly.
+// Extra Attached box1
+E_box1 = true; // [true,false]
+E_box1_Y = 10;
+E_box1_Z = 100;
 
 /* [Hidden] */
 //Lid scale (effective overhang)
@@ -79,6 +83,12 @@ module box() {
 	// floor
 	translate([0,0,Floor_thickness/2])
 		cube(size=[x+Delta, y+Delta,Floor_thickness],center=true);
+    if (E_box1==true)
+    {
+        #translate([-x/2, -y/2-E_box1_Y,Floor_thickness/2])
+        cube(size=[x, E_box1_Y, Floor_thickness], center=false);
+    }
+    
 	// Top ridge of lid
 	translate([0,0,Box_z-Lid_thickness/2])
 		lid_ridge(x,y);
