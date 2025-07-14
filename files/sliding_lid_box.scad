@@ -48,6 +48,10 @@ Delta = 0.1;     // to get good overlaps for real objects
 roundness = 32;  // for curve res.
 epsilon = 0.001; // for minkowski lid height :(
 
+	x = Box_x-Wall_thickness;
+	y = Box_y-Wall_thickness;
+    E_box1_Yoffset= -(y/2+E_box1_Y/2)-Wall_thickness;
+
 // Lid
 module lid(extra_x=Looseness, extra_z=Delta*2) {
 	translate([0,Wall_thickness/2+Delta,-Lid_thickness/2-epsilon/2])
@@ -93,9 +97,7 @@ module E_box_lid_ridge(x, y) {
 
 // box
 module box() {
-	x = Box_x-Wall_thickness;
-	y = Box_y-Wall_thickness;
-    E_box1_Yoffset= -(y/2+E_box1_Y/2)-Wall_thickness;
+
 	linear_extrude(height=Box_z-Lid_thickness, convexity=4)
 	difference() {
 		offset(r=Wall_thickness, $fn=roundness) 
@@ -127,32 +129,6 @@ module box() {
     {
         #translate([0, E_box1_Yoffset, E_box1_Z-Lid_thickness/2])
             E_box_lid_ridge(x, E_box1_Y);
-        // Place the extra box lid to the side for printing, like the main lid
-        E_lid_tx = (Show_assembled == "no") ? Box_x + Wall_thickness : 0;
-        E_lid_tz = (Show_assembled == "yes") ? E_box1_Z - Lid_thickness/2 : Lid_thickness/2;
-        E_lid_ty = (Show_assembled == "yes") ? E_box1_Y/3 : -Wall_thickness;
-        color(lid_color)
-        translate([E_lid_tx, E_box1_Yoffset + E_lid_ty, E_lid_tz])
-        difference() {
-            E_box_lid(-Looseness, 0);
-            // subtract fingernail recess
-            if (E_Grip_recess=="yes") {
-                translate([0,-E_box1_Y/2.7,Lid_thickness/4])
-                    fingernail_helper();
-            }
-            // subtract inset
-            if (E_Lid_inset=="yes") {
-                translate([0,0,Lid_thickness/2])
-                    cube(size=[Box_x/2, E_box1_Y/2,Lid_thickness/2], center=true);
-            }
-        }
-        // Subtract a cube from the front to open the slot for the lid
-        difference() {
-            // The extra box body (already created above)
-            // Subtract a cube at the front (positive Y direction)
-            translate([0, E_box1_Yoffset + (E_box1_Y/2) - 0.01, (E_box1_Z - Lid_thickness)/2])
-                cube([Box_x - Wall_thickness + 2*Wall_thickness, 2, E_box1_Z - Lid_thickness], center=true);
-        }
     }
 }
 
@@ -194,3 +170,24 @@ translate([tx,ty,tz])
 				cube(size=[Box_x/2, Box_y/2,Lid_thickness/2], center=true);
 		}
 	}
+// Build the Extra Box Lid (after main lid)
+if (E_box1==true) {
+    E_lid_tx = (Show_assembled == "no") ? Box_x + Wall_thickness : 0;
+    E_lid_tz = (Show_assembled == "yes") ? E_box1_Z - Lid_thickness/2 : Lid_thickness/2;
+    E_lid_ty = (Show_assembled == "yes") ? E_box1_Y/3 : -Wall_thickness;
+    color(lid_color)
+    translate([E_lid_tx, E_box1_Yoffset + E_lid_ty, E_lid_tz])
+    difference() {
+        E_box_lid(-Looseness, 0);
+        // subtract fingernail recess
+        if (E_Grip_recess=="yes") {
+            translate([0,-E_box1_Y/2.7,Lid_thickness/4])
+                fingernail_helper();
+        }
+        // subtract inset
+        if (E_Lid_inset=="yes") {
+            translate([0,0,Lid_thickness/2])
+                cube(size=[Box_x/2, E_box1_Y/2,Lid_thickness/2], center=true);
+        }
+    }
+}
