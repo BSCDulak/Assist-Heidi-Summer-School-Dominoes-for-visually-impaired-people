@@ -23,17 +23,17 @@ Looseness = 0.8;  //[0:0.1:1]
 //
 Show_assembled = "no"; // [yes,no]
 // Number of internal dividers
-X_Dividers = 3;
+X_Dividers = 0;
 Even_X_Dividers = true; // [true,false] and don't use "" for true or false
 X_Divider_Distances = [10,20,30]; // Set Values here if you set Even_X_Dividers to false. The amount of values needs to be at least the amount of X_Dividers for it to work properly.
 // Number of internal dividers
-Y_Dividers = 4;
+Y_Dividers = 0;
 Even_Y_Dividers = false; // [true,false]
 Y_Divider_Distances = [10, 15, 20, 35]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly.
 // Extra Attached box1
 E_box1 = true; // [true,false]
 E_box1_Y = 10;
-E_box1_Z = 100;
+E_box1_Z = 60;
 
 /* [Hidden] */
 //Lid scale (effective overhang)
@@ -80,18 +80,33 @@ module box() {
 			square(size=[x, y], center=true);
 		square(size=[x, y], center=true);
 	}
+    if (E_box1==true)
+    {
+        linear_extrude(height=E_box1_Z-Lid_thickness, convexity=4)
+        difference() {
+		offset(r=Wall_thickness, $fn=roundness) 
+			translate ([0,-Box_y+Delta*2+E_box1_Y+Wall_thickness*2,0]) square(size=[x, E_box1_Y], center=true);
+		translate ([0,-Box_y+Delta*2+E_box1_Y+Wall_thickness*2,0]) square(size=[x, E_box1_Y], center=true);
+        }
+    }
 	// floor
 	translate([0,0,Floor_thickness/2])
 		cube(size=[x+Delta, y+Delta,Floor_thickness],center=true);
     if (E_box1==true)
     {
-        #translate([-x/2, -y/2-E_box1_Y,Floor_thickness/2])
-        cube(size=[x, E_box1_Y, Floor_thickness], center=false);
+        #translate([0, -y/2-E_box1_Y+Wall_thickness*1.5,Floor_thickness/2])
+        cube(size=[x+Delta, E_box1_Y+Delta*2, Floor_thickness], center=true);
     }
     
 	// Top ridge of lid
 	translate([0,0,Box_z-Lid_thickness/2])
 		lid_ridge(x,y);
+    if (E_box1==true)
+    {
+        translate([0,-y/2-E_box1_Y+Wall_thickness*1.5,E_box1_Z-Lid_thickness/2])
+		lid_ridge(x,E_box1_Y);
+    
+    }
 }
 
 
