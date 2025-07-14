@@ -10,7 +10,7 @@ Box_x = 172;
 Box_y = 100;
 // Height of Box
 Box_z = 50; 
-Wall_thickness = 30;  //[2:0.5:10]
+Wall_thickness = 10;  //[2:0.5:10]
 Floor_thickness = 5;
 Lid_thickness = 10;   //[2:0.5:10]
 // Add inset for a Label
@@ -73,7 +73,7 @@ module fingernail_helper() {
 module E_box_lid(extra_x=Looseness, extra_z=Delta*2) {
     translate([0, Wall_thickness/2+Delta, -Lid_thickness/2-epsilon/2])
     linear_extrude(height=Lid_thickness+extra_z*2, scale=[lid_scale,1])
-        square(size=[Box_x+extra_x, E_box1_Y], center=true);
+        square(size=[Box_x+extra_x, E_box1_Y+Wall_thickness], center=true);
 }
 
 // Extra box lid ridge
@@ -126,7 +126,7 @@ module box() {
         // Place the extra box lid to the side for printing, like the main lid
         E_lid_tx = (Show_assembled == "no") ? Box_x + Wall_thickness : 0;
         E_lid_tz = (Show_assembled == "yes") ? E_box1_Z - Lid_thickness/2 : Lid_thickness/2;
-        E_lid_ty = (Show_assembled == "yes") ? E_box1_Y/3 : 0;
+        E_lid_ty = (Show_assembled == "yes") ? E_box1_Y/3 : -Wall_thickness;
         translate([E_lid_tx, E_box1_Yoffset + E_lid_ty, E_lid_tz])
             E_box_lid(-Looseness, 0);
         // Subtract a cube from the front to open the slot for the lid
