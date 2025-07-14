@@ -7,12 +7,12 @@
 // Width of Box
 Box_x = 172;
 // Length of Box
-Box_y = 41;
+Box_y = 100;
 // Height of Box
-Box_z = 25; 
-Wall_thickness = 2;  //[2:0.5:10]
-Floor_thickness = 1;
-Lid_thickness = 3;   //[2:0.5:10]
+Box_z = 50; 
+Wall_thickness = 30;  //[2:0.5:10]
+Floor_thickness = 5;
+Lid_thickness = 10;   //[2:0.5:10]
 // Add inset for a Label
 Lid_inset = "yes"; // [yes,no]
 // Fingernail recess to ease opening lid
@@ -28,12 +28,12 @@ Even_X_Dividers = true; // [true,false] and don't use "" for true or false
 X_Divider_Distances = [10,20,30]; // Set Values here if you set Even_X_Dividers to false. The amount of values needs to be at least the amount of X_Dividers for it to work properly.
 // Number of internal dividers
 Y_Dividers = 0;
-Even_Y_Dividers = false; // [true,false]
+Even_Y_Dividers = true; // [true,false]
 Y_Divider_Distances = [10, 15, 20, 35]; // Set Values here if you set Even_Y_Dividers to false. The amount of values needs to be at least the amount of Y_Dividers for it to work properly.
 // Extra Attached box1
 E_box1 = true; // [true,false]
-E_box1_Y = 50;
-E_box1_Z = 60;
+E_box1_Y = 100;
+E_box1_Z = 120;
 
 /* [Hidden] */
 //Lid scale (effective overhang)
@@ -77,10 +77,10 @@ module E_box_lid(extra_x=Looseness, extra_z=Delta*2) {
 }
 
 // Extra box lid ridge
-module E_box_lid_ridge() {
+module E_box_lid_ridge(x, y) {
     difference() {
         minkowski() {
-            cube(size=[Box_x, E_box1_Y, Lid_thickness], center=true);
+            cube(size=[x,y,Lid_thickness], center=true);
             cylinder(h=epsilon, r=Wall_thickness, $fn=roundness);
         }
         E_box_lid(0, epsilon);
@@ -117,18 +117,12 @@ module box() {
     }
     
 	// Top ridge of lid
-	#translate([0,0,Box_z-Lid_thickness/2])
+	translate([0,0,Box_z-Lid_thickness/2])
 		lid_ridge(x,y);
-    if (E_box1==false) //temporary set to false until fix
-    {
-        #translate([0,E_box1_Yoffset,E_box1_Z-Lid_thickness/2])
-		lid_ridge(x,E_box1_Y);
-    
-    }
     if (E_box1==true)
     {
         #translate([0, E_box1_Yoffset, E_box1_Z-Lid_thickness/2])
-            E_box_lid_ridge();
+            E_box_lid_ridge(x, E_box1_Y);
         // Place the extra box lid to the side for printing, like the main lid
         E_lid_tx = (Show_assembled == "no") ? Box_x + Wall_thickness : 0;
         E_lid_tz = (Show_assembled == "yes") ? E_box1_Z - Lid_thickness/2 : Lid_thickness/2;
