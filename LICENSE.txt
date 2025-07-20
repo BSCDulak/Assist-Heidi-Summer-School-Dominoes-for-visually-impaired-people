@@ -1,0 +1,2 @@
+Most files in this repository have been created by the team "The Dominoes" in the context of the ASSIST HEIDI summer school 2025 organized by FH Technikum Wien. "The Dominoes" consist of Böning Melvin Douglas, Granig Viktoria, Gupta Shreya and Megahed Hanem. Work of others is specified in the subfolders.
+Most files in this repository are licensed under Creative Commons - Attribution - NonCommercial unless specified otherwise in the subfolders. https://creativecommons.org/licenses/by-nc/4.0/
